@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="L'Univers de Jeux : des petits jeux gratuits pour se divertir et réfléchir.">
+<title>L'Univers de Jeux</title>
+<style>
+:root{--bg:#0b1020;--panel:#151d34;--panel2:#1c2948;--text:#f4f7ff;--muted:#b8c3dc;--accent:#7c9cff;--accent2:#5ee0bd}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#0b1020,#111b35 65%,#102c3c);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+header{padding:34px 18px 24px;text-align:center;background:radial-gradient(ellipse at top,#293d73 0,transparent 70%)}
+.brand{font-size:clamp(2rem,7vw,3.3rem);font-weight:850;letter-spacing:-1.5px;margin:0}.brand span{color:var(--accent2)}
+.tagline{color:var(--muted);margin:10px 0 0}
+main{max-width:1000px;margin:auto;padding:18px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 22px}
+input,select,button{font:inherit;border:0;border-radius:12px;padding:12px 14px}
+input,select{background:var(--panel);color:var(--text);border:1px solid #344466}
+input{flex:1;min-width:180px}
+button{background:var(--accent);color:#081127;font-weight:750;cursor:pointer}
+button:hover{filter:brightness(1.08)}button.secondary{background:#2a3858;color:var(--text)}
+h2{font-size:1.35rem;margin:22px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card,.gamebox{background:linear-gradient(145deg,var(--panel),#111a30);border:1px solid #2b3a5b;border-radius:18px;padding:18px;box-shadow:0 10px 25px #0002}
+.card .icon{font-size:2rem}.card h3{margin:8px 0}.card p{color:var(--muted);min-height:42px;margin:0 0 14px}
+.pill{display:inline-block;color:var(--accent2);font-size:.8rem;font-weight:700;margin-bottom:6px}
+#game-area{margin-top:22px;display:none}.gamebox{padding:20px}.gamebox h3{margin-top:0}
+#board{display:grid;grid-template-columns:repeat(3,minmax(65px,90px));gap:8px;margin:14px 0}
+.cell{height:76px;background:var(--panel2);color:var(--text);font-size:2rem;border:1px solid #43577e}
+#quiz-options{display:grid;gap:8px;max-width:480px}
+#memory{display:grid;grid-template-columns:repeat(4,minmax(48px,76px));gap:8px;margin:14px 0}
+.mem{height:68px;background:var(--panel2);color:var(--text);font-size:1.5rem;border:1px solid #43577e}
+.status{color:var(--accent2);font-weight:700;min-height:26px}
+footer{text-align:center;color:var(--muted);padding:28px 16px;font-size:.9rem}
+.small{font-size:.88rem;color:var(--muted)}
+@media(max-width:480px){main{padding:14px}.cell{height:68px}}
+</style>
+</head>
+<body>
+<header>
+  <p class="brand">L'Univers <span>de Jeux</span></p>
+  <p class="tagline">Le plaisir de jouer sans limites !</p>
+</header>
+<main>
+  <div class="toolbar">
+    <input id="search" type="search" placeholder="Rechercher un jeu..." aria-label="Rechercher un jeu">
+    <select id="category" aria-label="Filtrer par catégorie">
+      <option value="Tous">Toutes les catégories</option>
+      <option>Réflexion</option><option>Quiz</option><option>Classique</option>
+    </select>
+  </div>
+  <h2>Découvre nos jeux</h2>
+  <section class="grid" id="games">
+    <article class="card" data-category="Classique" data-name="morpion tic tac toe">
+      <div class="icon">⭕</div><span class="pill">CLASSIQUE</span>
+      <h3>Morpion</h3><p>Aligne trois symboles avant ton adversaire.</p>
+      <button onclick="openGame('morpion')">Jouer</button>
+    </article>
+    <article class="card" data-category="Réflexion" data-name="mémoire cartes paires">
+      <div class="icon">🧠</div><span class="pill">RÉFLEXION</span>
+      <h3>Jeu de mémoire</h3><p>Retrouve les paires de cartes identiques.</p>
+      <button onclick="openGame('memory')">Jouer</button>
+    </article>
+    <article class="card" data-category="Quiz" data-name="quiz culture générale questions">
+      <div class="icon">💡</div><span class="pill">QUIZ</span>
+      <h3>Quiz de culture générale</h3><p>Teste tes connaissances avec quelques questions.</p>
+      <button onclick="openGame('quiz')">Jouer</button>
+    </article>
+  </section>
+
+  <section id="game-area">
+    <h2 id="game-title">Jeu</h2>
+    <div class="gamebox">
+      <div id="game-content"></div>
+      <button class="secondary" onclick="closeGame()">Retour aux jeux</button>
+    </div>
+  </section>
+  <p class="small">De nouveaux jeux seront ajoutés progressivement. Amuse-toi tout en respectant les autres joueurs.</p>
+</main>
+<footer>© <span id="year"></span> L'Univers de Jeux — Site de divertissement.</footer>
+<script>
+document.getElementById('year').textContent=new Date().getFullYear();
+const search=document.getElementById('search'), category=document.getElementById('category');
+function filterGames(){const q=search.value.toLowerCase();const c=category.value;document.querySelectorAll('.card').forEach(card=>{card.style.display=(card.dataset.name.includes(q)&&(c==='Tous'||card.dataset.category===c))?'':'none';});}
+search.addEventListener('input',filterGames);category.addEventListener('change',filterGames);
+const area=document.getElementById('game-area'),content=document.getElementById('game-content'),title=document.getElementById('game-title');
+function openGame(which){area.style.display='block';area.scrollIntoView({behavior:'smooth'});if(which==='morpion')morpion();if(which==='memory')memory();if(which==='quiz')quiz();}
+function closeGame(){area.style.display='none';content.innerHTML='';document.querySelector('#games').scrollIntoView({behavior:'smooth'});}
+function morpion(){title.textContent='Morpion';let b=Array(9).fill(''),turn='X',done=false;content.innerHTML='<p>Deux joueurs : X puis O. À vous de jouer à tour de rôle.</p><div id="board"></div><p class="status" id="status">Au tour de X</p><button onclick="morpion()">Recommencer</button>';const board=document.getElementById('board');const status=document.getElementById('status');function draw(){board.innerHTML='';b.forEach((v,i)=>{let btn=document.createElement('button');btn.className='cell';btn.textContent=v;btn.onclick=()=>move(i);board.appendChild(btn);});}function move(i){if(done||b[i])return;b[i]=turn;draw();let wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];if(wins.some(line=>line.every(n=>b[n]===turn))){status.textContent='Bravo ! '+turn+' a gagné.';done=true;}else if(b.every(Boolean)){status.textContent='Match nul !';done=true;}else{turn=turn==='X'?'O':'X';status.textContent='Au tour de '+turn;}}draw();}
+function memory(){title.textContent='Jeu de mémoire';const vals=['🍀','⭐','⚽','🎈','🍀','⭐','⚽','🎈'];let deck=vals.sort(()=>Math.random()-.5),open=[],matched=0,lock=false,moves=0;content.innerHTML='<p>Retourne deux cartes à la fois pour trouver les paires.</p><p class="status" id="mem-status">Paires trouvées : 0/4 · Coups : 0</p><div id="memory"></div><button onclick="memory()">Recommencer</button>';const grid=document.getElementById('memory'),st=document.getElementById('mem-status');deck.forEach((v,i)=>{let btn=document.createElement('button');btn.className='mem';btn.textContent='?';btn.onclick=()=>{if(lock||btn.dataset.done||open.includes(i))return;btn.textContent=v;open.push(i);if(open.length===2){moves++;let [a,b]=open;if(deck[a]===deck[b]){grid.children[a].dataset.done='1';grid.children[b].dataset.done='1';matched++;open=[];st.textContent=`Paires trouvées : ${matched}/4 · Coups : ${moves}`;if(matched===4)st.textContent+= ' — Bravo, tu as gagné !';}else{lock=true;setTimeout(()=>{grid.children[a].textContent='?';grid.children[b].textContent='?';open=[];lock=false;st.textContent=`Paires trouvées : ${matched}/4 · Coups : ${moves}`;},800);}}};grid.appendChild(btn);});}
+function quiz(){title.textContent='Quiz de culture générale';const qs=[{q:'Quelle est la capitale de la Côte d’Ivoire ?',o:['Abidjan','Yamoussoukro','Bouaké'],a:1},{q:'Combien de côtés a un triangle ?',o:['Trois','Quatre','Cinq'],a:0},{q:'Quelle planète est surnommée la planète rouge ?',o:['Vénus','Mars','Jupiter'],a:1},{q:'Quel animal est connu comme le roi de la savane ?',o:['Éléphant','Lion','Girafe'],a:1}];let i=0,score=0;function show(){if(i===qs.length){content.innerHTML=`<h3>Quiz terminé !</h3><p class="status">Ton score : ${score}/${qs.length}</p><button onclick="quiz()">Recommencer</button>`;return;}let q=qs[i];content.innerHTML=`<p>Question ${i+1}/${qs.length}</p><h3>${q.q}</h3><div id="quiz-options"></div><p class="status" id="qstatus"></p>`;q.o.forEach((v,n)=>{let btn=document.createElement('button');btn.textContent=v;btn.onclick=()=>{if(document.getElementById('qstatus').textContent)return;if(n===q.a){score++;document.getElementById('qstatus').textContent='Bonne réponse !';}else{document.getElementById('qstatus').textContent='Pas tout à fait. Bonne réponse : '+q.o[q.a];}let next=document.createElement('button');next.textContent=i===qs.length-1?'Voir le résultat':'Question suivante';next.style.marginTop='12px';next.onclick=()=>{i++;show();};content.appendChild(next);};document.getElementById('quiz-options').appendChild(btn);});}show();}
+</script>
+</body>
+</html>
